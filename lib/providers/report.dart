@@ -168,7 +168,7 @@ class Report with ChangeNotifier {
                   db.collection('users').doc(firebaseAuth.currentUser!.uid),
               notes: notes.text,
               address: address.text,
-              map: '',
+              map: _map,
               image: fileName,
               reportedDate: Timestamp.now(),
             ).toJson())

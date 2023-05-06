@@ -2,11 +2,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:no_trash/helpers/consts.dart';
 import 'package:no_trash/providers/auth.dart';
+import 'package:no_trash/providers/maps.dart';
 import 'package:no_trash/providers/navigation.dart';
 import 'package:no_trash/providers/report.dart';
 import 'package:no_trash/screens/auth/login.dart';
 import 'package:no_trash/screens/auth/otp_verification.dart';
 import 'package:no_trash/screens/auth/register.dart';
+import 'package:no_trash/screens/reporter/location_picker.dart';
 import 'package:no_trash/screens/officer/index.dart';
 import 'package:no_trash/screens/reporter/index.dart';
 import 'package:no_trash/screens/reporter/report_form.dart';
@@ -33,6 +35,7 @@ class NoTrash extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => Auth()),
         ChangeNotifierProvider(create: (context) => Report()),
         ChangeNotifierProvider(create: (context) => Navigation()),
+        ChangeNotifierProvider(create: (context) => Maps()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -62,6 +65,7 @@ class NoTrash extends StatelessWidget {
           OfficerIndex.routeName: (context) => const OfficerIndex(),
           ReporterIndex.routeName: (context) => const ReporterIndex(),
           ReportList.routeName: (context) => const ReportList(),
+          LocationPicker.routeName: (context) => const LocationPicker(),
         },
       ),
     );

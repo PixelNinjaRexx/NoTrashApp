@@ -43,6 +43,13 @@ class Report with ChangeNotifier {
       .where(
           (x) => x.confirmed && x.reporter.id == firebaseAuth.currentUser!.uid)
       .toList();
+  List<ReportModel> get myHistoryReports => _reports
+      .where((x) =>
+          x.confirmed && x.confirmedBy?.id == firebaseAuth.currentUser!.uid)
+      .toList()
+    ..sort((a, b) =>
+        b.confirmedDate!.toDate().compareTo(a.confirmedDate!.toDate()));
+
   String get map => _map;
   bool get loading => _loading;
   String get error => _error;
@@ -168,7 +175,7 @@ class Report with ChangeNotifier {
                   db.collection('users').doc(firebaseAuth.currentUser!.uid),
               notes: notes.text,
               address: address.text,
-              map: '',
+              map: _map,
               image: fileName,
               reportedDate: Timestamp.now(),
             ).toJson())
@@ -228,7 +235,7 @@ class Report with ChangeNotifier {
             content: Row(
               children: const [
                 Icon(Icons.warning_rounded, color: Colors.white),
-                Text('Tidak ada foto yang diunggah'),
+                Text(' Tidak ada foto yang diunggah'),
               ],
             ),
           ),

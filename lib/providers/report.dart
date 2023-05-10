@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:no_trash/models/report.dart';
 import 'package:no_trash/screens/officer/index.dart';
 import 'package:no_trash/screens/reporter/index.dart';
+import 'package:no_trash/widgets/prompt_dialog.dart';
 import 'package:no_trash/widgets/success_dialog.dart';
 import 'package:uuid/uuid.dart';
 
@@ -43,6 +44,13 @@ class Report with ChangeNotifier {
       .where(
           (x) => x.confirmed && x.reporter.id == firebaseAuth.currentUser!.uid)
       .toList();
+  List<ReportModel> get myHistoryReports => _reports
+      .where((x) =>
+          x.confirmed && x.confirmedBy?.id == firebaseAuth.currentUser!.uid)
+      .toList()
+    ..sort((a, b) =>
+        b.confirmedDate!.toDate().compareTo(a.confirmedDate!.toDate()));
+
   String get map => _map;
   bool get loading => _loading;
   String get error => _error;
@@ -123,33 +131,47 @@ class Report with ChangeNotifier {
   }
 
   Future<void> confirmReport(BuildContext context, String reportId) async {
-    startLoading();
-    try {
-      final DocumentReference<Map<String, dynamic>> confirmedBy =
-          db.collection('users').doc(firebaseAuth.currentUser!.uid);
-      await db.collection('reports').doc(reportId).update({
-        'confirmed': true,
-        'confirmed_by': confirmedBy,
-        'confirmed_date': Timestamp.now(),
-      }).then((value) {
-        showDialog(
-          context: context,
-          builder: (context) => SuccessDialog(
-            text: 'Laporan berhasil dikonfirmasi! Anda mendapatkan +3 poin.',
-            buttonLabel: 'Kembali ke Home',
-            onAction: () => Navigator.pushNamedAndRemoveUntil(
-              context,
-              OfficerIndex.routeName,
-              (route) => false,
-            ),
-          ),
-        );
-        stopLoading();
-      });
-    } on FirebaseException catch (err) {
-      setError(err.message.toString());
-      stopLoading();
-    }
+    showDialog(
+      context: context,
+      builder: (context) => PromptDialog(
+        text: 'Apakah Anda yakin mengkonfirmasi laporan ini?',
+        approveLabel: 'Yakin',
+        rejectLabel: 'Tidak',
+        onApprove: () async {
+          try {
+            startLoading();
+            final DocumentReference<Map<String, dynamic>> confirmedBy =
+                db.collection('users').doc(firebaseAuth.currentUser!.uid);
+            await db.collection('reports').doc(reportId).update({
+              'confirmed': true,
+              'confirmed_by': confirmedBy,
+              'confirmed_date': Timestamp.now(),
+            }).then((value) {
+              stopLoading();
+              showDialog(
+                context: context,
+                builder: (context) => SuccessDialog(
+                  text:
+                      'Laporan berhasil dikonfirmasi! Anda mendapatkan +3 poin.',
+                  buttonLabel: 'Kembali ke Home',
+                  onAction: () => Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    OfficerIndex.routeName,
+                    (route) => false,
+                  ),
+                ),
+              );
+            });
+          } on FirebaseException catch (err) {
+            setError(err.message.toString());
+            stopLoading();
+          }
+        },
+        onReject: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
   }
 
   Future<void> addReport(BuildContext context) async {
@@ -168,7 +190,7 @@ class Report with ChangeNotifier {
                   db.collection('users').doc(firebaseAuth.currentUser!.uid),
               notes: notes.text,
               address: address.text,
-              map: '',
+              map: _map,
               image: fileName,
               reportedDate: Timestamp.now(),
             ).toJson())
@@ -228,7 +250,7 @@ class Report with ChangeNotifier {
             content: Row(
               children: const [
                 Icon(Icons.warning_rounded, color: Colors.white),
-                Text('Tidak ada foto yang diunggah'),
+                Text(' Tidak ada foto yang diunggah'),
               ],
             ),
           ),

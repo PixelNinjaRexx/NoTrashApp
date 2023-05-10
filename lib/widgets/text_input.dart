@@ -5,7 +5,7 @@ class TextInput extends StatelessWidget {
   final bool? isPassword;
   final TextInputType? textInputType;
   final String? suffixText;
-  final String label;
+  final String? label;
   final String hintText;
   final TextEditingController controller;
   final int maxLines;
@@ -16,7 +16,7 @@ class TextInput extends StatelessWidget {
     this.textInputType,
     this.suffixText,
     this.maxLines = 1,
-    required this.label,
+    this.label,
     required this.hintText,
     required this.controller,
   });
@@ -28,13 +28,15 @@ class TextInput extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          label != null
+              ? Text(
+                  label!,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )
+              : SizedBox.shrink(),
           TextField(
             controller: controller,
             obscureText: isPassword == true ? true : false,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,7 @@ class Auth with ChangeNotifier {
   bool _loading = false;
   String _selectedRole = '';
   String _otp = '';
+  Timer? _timer;
 
   UserModel get currentUser => _currentUser;
   String get verificationId => _verificationId;
@@ -36,6 +39,7 @@ class Auth with ChangeNotifier {
   bool get loading => _loading;
   String get selectedRole => _selectedRole;
   String get otp => _otp;
+  Timer? get timer => _timer;
 
   Auth() {
     onStart();
@@ -116,6 +120,12 @@ class Auth with ChangeNotifier {
     return true;
   }
 
+  void setDefaultValues() {
+    _name.text = currentUser.name;
+    _phoneNumber.text = currentUser.phoneNumber;
+    notifyListeners();
+  }
+
   Future<void> createUserWithEmailAndPassword(context) async {
     resetError();
     startLoading();
@@ -175,6 +185,26 @@ class Auth with ChangeNotifier {
             email: _email.text,
             phoneNumber: _phoneNumber.text,
           ).toJson());
+    } catch (error) {
+      stopLoading();
+      _error = error.toString();
+    }
+  }
+
+  Future<void> updateProfile() async {
+    try {
+      startLoading();
+      await db
+          .collection('users')
+          .doc(firebaseAuth.currentUser!.uid)
+          .set(UserModel(
+            id: firebaseAuth.currentUser!.uid,
+            role: currentUser.role,
+            name: _name.text,
+            email: currentUser.email,
+            phoneNumber: _phoneNumber.text,
+          ).toJson());
+      stopLoading();
     } catch (error) {
       stopLoading();
       _error = error.toString();
@@ -244,6 +274,26 @@ class Auth with ChangeNotifier {
     );
     stopLoading();
     return credential.user != null ? true : false;
+  }
+
+  Future<bool> verifyEmail() async {
+    resetError();
+    startLoading();
+    try {
+      final User user = firebaseAuth.currentUser!;
+      await user.sendEmailVerification();
+      _timer = Timer.periodic(Duration(seconds: 10), (_) {
+        _timer = null;
+        notifyListeners();
+      });
+      notifyListeners();
+      stopLoading();
+      return true;
+    } on FirebaseAuthException catch (err) {
+      setError(err.toString());
+      stopLoading();
+      return false;
+    }
   }
 
   Future<void> signOut(context) async {

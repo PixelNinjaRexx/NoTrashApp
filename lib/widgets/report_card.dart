@@ -14,34 +14,34 @@ class ReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          ReportDetail.routeName,
-          arguments: report,
-        );
-      },
-      child: Container(
-        width: 152,
-        height: 198,
-        margin: const EdgeInsets.only(right: 10, bottom: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 12,
-              offset: Offset(2, 4),
-            ),
-          ],
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment(1, 6),
-            stops: [0.1, 1],
-            colors: [kPrimaryColor, kBgColor],
+    return Container(
+      width: 152,
+      height: 198,
+      margin: const EdgeInsets.only(right: 10, bottom: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 12,
+            offset: Offset(2, 4),
           ),
+        ],
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment(1, 6),
+          stops: [0.1, 1],
+          colors: [kPrimaryColor, kBgColor],
         ),
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            ReportDetail.routeName,
+            arguments: report,
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -62,6 +62,7 @@ class ReportCard extends StatelessWidget {
                             children: [
                               Text(
                                 snapshot.data!.name,
+                                overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontSize: 10,
@@ -69,6 +70,7 @@ class ReportCard extends StatelessWidget {
                               ),
                               Text(
                                 Auth().countryCode + snapshot.data!.phoneNumber,
+                                overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontSize: 10,
@@ -91,23 +93,22 @@ class ReportCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Flexible(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.location_on_sharp, color: Colors.white),
-                      Text(
-                        report.address,
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    const Icon(Icons.location_on_sharp, color: Colors.white),
+                    Text(
+                      report.address,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: Colors.white,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:no_trash/models/user.dart';
 import 'package:no_trash/screens/auth/login.dart';
 import 'package:no_trash/screens/screen_tree.dart';
+import 'package:no_trash/widgets/success_dialog.dart';
 
 class Auth with ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;

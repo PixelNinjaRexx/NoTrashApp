@@ -47,6 +47,7 @@ class Maps with ChangeNotifier {
     );
 
     _myLocation = currentCameraPosition;
+    _myLocation = currentLocation;
     notifyListeners();
     setMarkers(
       LatLng(currentPosition.latitude, currentPosition.longitude),
@@ -54,6 +55,10 @@ class Maps with ChangeNotifier {
     );
     animateCamera(currentCameraPosition);
     setCurrentLocation(currentCameraPosition);
+    animateCamera(CameraPosition(
+      target: LatLng(currentPosition.latitude, currentPosition.longitude),
+      zoom: 18,
+    ));
     stopLoading();
   }
 
@@ -95,6 +100,8 @@ class Maps with ChangeNotifier {
   void animateCamera(CameraPosition _camPosition) async {
     final GoogleMapController controller = await _completer.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_camPosition));
+    _currentLocation = _camPosition;
+    notifyListeners();
   }
 
   void setCurrentLocation(CameraPosition _camPosition) async {

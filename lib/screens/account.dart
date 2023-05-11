@@ -38,6 +38,7 @@ class Settings extends StatelessWidget {
                     context,
                     UpdateProfile.RouteName,
                   ),
+                  onPressed: () {},
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

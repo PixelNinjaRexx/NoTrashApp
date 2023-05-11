@@ -121,6 +121,12 @@ class Auth with ChangeNotifier {
     return true;
   }
 
+  void setDefaultValues() {
+    _name.text = currentUser.name;
+    _phoneNumber.text = currentUser.phoneNumber;
+    notifyListeners();
+  }
+
   Future<void> createUserWithEmailAndPassword(context) async {
     resetError();
     startLoading();
@@ -180,6 +186,26 @@ class Auth with ChangeNotifier {
             email: _email.text,
             phoneNumber: _phoneNumber.text,
           ).toJson());
+    } catch (error) {
+      stopLoading();
+      _error = error.toString();
+    }
+  }
+
+  Future<void> updateProfile() async {
+    try {
+      startLoading();
+      await db
+          .collection('users')
+          .doc(firebaseAuth.currentUser!.uid)
+          .set(UserModel(
+            id: firebaseAuth.currentUser!.uid,
+            role: currentUser.role,
+            name: _name.text,
+            email: currentUser.email,
+            phoneNumber: _phoneNumber.text,
+          ).toJson());
+      stopLoading();
     } catch (error) {
       stopLoading();
       _error = error.toString();
@@ -266,6 +292,25 @@ class Auth with ChangeNotifier {
       return true;
     } on FirebaseAuthException catch (err) {
       setError(err.toString());
+      stopLoading();
+      return false;
+    }
+  }
+
+  Future<bool> sendPasswordResetEmail(String email) async {
+    startLoading();
+    try {
+      if (email != '') {
+        await firebaseAuth.sendPasswordResetEmail(email: email);
+        stopLoading();
+        return true;
+      } else {
+        setError('Harap mengisi email');
+        stopLoading();
+        return false;
+      }
+    } on FirebaseAuthException catch (err) {
+      setError(err.message.toString());
       stopLoading();
       return false;
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:no_trash/helpers/consts.dart';
 import 'package:no_trash/providers/auth.dart';
+import 'package:no_trash/screens/auth/update_profile.dart';
 import 'package:no_trash/widgets/inline_text.dart';
 import 'package:no_trash/widgets/layout.dart';
 import 'package:no_trash/widgets/loading.dart';
@@ -33,6 +34,10 @@ class Settings extends StatelessWidget {
                   child: Icon(Icons.person, color: Colors.white, size: 38),
                 ),
                 TextButton(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    UpdateProfile.RouteName,
+                  ),
                   onPressed: () {},
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -144,6 +149,52 @@ class Settings extends StatelessWidget {
                   child: InlineText(
                     label: 'Kategori pengguna',
                     value: value.currentUser.role,
+                  ),
+                ),
+                Divider(color: Colors.black54, height: 1),
+                InkWell(
+                  onTap: () async {
+                    await value
+                        .sendPasswordResetEmail(value.currentUser.email)
+                        .then((sent) {
+                      if (sent) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => SuccessDialog(
+                            text:
+                                'Link reset password berhasil dikirim ke ${value.currentUser.email}. Silahkan cek email Anda.',
+                            buttonLabel: 'OK',
+                            onAction: () {
+                              Navigator.pop(context);
+                              value.signOut(context);
+                            },
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                Icon(
+                                  Icons.warning_rounded,
+                                  color: Colors.white,
+                                ),
+                                Text(' ${value.error}'),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 8),
+                    child: InlineText(
+                      label: 'Reset password',
+                      child: Icon(
+                        Icons.chevron_right_rounded,
+                      ),
+                    ),
                   ),
                 ),
                 Divider(color: Colors.black54, height: 1),

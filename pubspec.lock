@@ -615,6 +615,7 @@ packages:
     version: "1.0.0+1"
   url_launcher:
     dependency: "direct main"
+    dependency: transitive
     description:
       name: url_launcher
       sha256: "75f2846facd11168d007529d6cd8fcb2b750186bea046af9711f10b907e1587e"

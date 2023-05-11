@@ -41,12 +41,20 @@ class Maps with ChangeNotifier {
   void onStart() async {
     startLoading();
     Position currentPosition = await getGeoLocationPosition();
+    CameraPosition currentCameraPosition = CameraPosition(
+      target: LatLng(currentPosition.latitude, currentPosition.longitude),
+      zoom: DEFAULT_ZOOM,
+    );
+
+    _myLocation = currentCameraPosition;
     _myLocation = currentLocation;
     notifyListeners();
     setMarkers(
       LatLng(currentPosition.latitude, currentPosition.longitude),
       'myLocation',
     );
+    animateCamera(currentCameraPosition);
+    setCurrentLocation(currentCameraPosition);
     animateCamera(CameraPosition(
       target: LatLng(currentPosition.latitude, currentPosition.longitude),
       zoom: 18,

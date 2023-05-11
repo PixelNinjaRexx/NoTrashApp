@@ -168,7 +168,7 @@ class Report with ChangeNotifier {
                   db.collection('users').doc(firebaseAuth.currentUser!.uid),
               notes: notes.text,
               address: address.text,
-              map: '',
+              map: _map,
               image: fileName,
               reportedDate: Timestamp.now(),
             ).toJson())
@@ -228,7 +228,7 @@ class Report with ChangeNotifier {
             content: Row(
               children: const [
                 Icon(Icons.warning_rounded, color: Colors.white),
-                Text('Tidak ada foto yang diunggah'),
+                Text(' Tidak ada foto yang diunggah'),
               ],
             ),
           ),
